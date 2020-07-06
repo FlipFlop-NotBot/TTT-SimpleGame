@@ -31,7 +31,7 @@ int main() {
 
 void switchPlayers(){
     if (player == 1) {
-        printf("     Jucatorul 1 alege: ");
+        printf("     Player 1 choose: ");
         scanf("%d", &choice);
         if (markBoard('X'))
             player = 1;
@@ -40,7 +40,7 @@ void switchPlayers(){
 
     }
     else if (player == 2){
-        printf("     Jucatorul 2 alege: ");
+        printf("     Player 2 choose: ");
         scanf("%d", &choice);
         if (markBoard('O'))
             player = 2;
@@ -51,7 +51,7 @@ void switchPlayers(){
 }
 
 void displayBoard(){
-    printf("\n             X si O          \n Jucatorul 1 (X) - Jucatorul 2 (O)\n\n");
+    printf("\n             X & O           \n Player 1 (X) - Player 2 (O)\n\n");
 
     printf("\t    |   |   \n"
            "\t  %c | %c | %c \n"
@@ -83,23 +83,23 @@ int checkForWin() {
     //Horizontal check
     for (int i = 1; i < 10; i += 3) {
         if (places[i] == places[i + 1] && places[i + 1] == places[i + 2]) {
-            printf("\tAi castigat!\n");
+            printf("\tYou won!\n");
             return 1;
         }
     }
     //Vertical check
     for (int i = 1; i < 4; i += 1) {
         if (places[i] == places[i + 3] && places[i + 3] == places[i + 6]) {
-            printf("\tAi castigat!\n");
+            printf("\tYou won!\n");
             return 1;
         }
     }
     //Diagonal check
     if (places[1] == places[5] && places[5] == places[9]) {
-        printf("\tAi castigat!\n");
+        printf("\tYou won!\n");
         return 1;
     } else if (places[3] == places[5] && places[5] == places[7]) {
-        printf("\tAi castigat!\n");
+        printf("\tYou won!\n");
         return 1;
     }
     //Check for draw
@@ -108,7 +108,7 @@ int checkForWin() {
             draw++;
     }
     if (draw == 9){
-        printf("\t   Remiza!\n");
+        printf("\t  Draw!\n");
         return 1;
     }
 
