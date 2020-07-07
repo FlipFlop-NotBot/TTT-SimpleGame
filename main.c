@@ -1,5 +1,5 @@
 /*
- * BUILT FOR LINUX - 2020
+ * TESTED IN LINUX - 2020
 */
 
 #include <stdio.h>
