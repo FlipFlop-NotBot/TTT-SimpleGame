@@ -1,5 +1,7 @@
 /*
  * TESTED IN LINUX - 2020
+ * 
+ * TO DO: FIND A WAY TO SIGN EACH CELL WITH A NUMBER!!!
 */
 
 #include <stdio.h>
