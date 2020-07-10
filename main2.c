@@ -8,6 +8,7 @@
  * and by changing the 'boardSqrt' var to the same value as the first two.
 */
 
+
 // Including needed stuff
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,6 +42,11 @@ struct TTT_BoardGame ttt_init(void) {
             else {
             	pos[2] = '0';
             	pos[1]++;
+            }
+
+            if (pos[1] > '9') {
+            	pos[1] = '0';
+            	pos[0]++;
             }
         }
     }
