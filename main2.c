@@ -34,7 +34,7 @@ struct TTT_BoardGame ttt_init(void) {
 void ttt_startMenu(void) {
 	char key;
 	system("clear");
-	printf("Tic tac toe game.\n\nTip: When prompted, each player needs to choose a spot to place their symbol.\nPress any key to continue: ");
+	printf("Tic tac toe game.\n\nTip: When prompted, each player needs to choose a spot to place their symbol.\nPress 'Enter' key to continue: ");
 	scanf("%c", &key);
 }
 
