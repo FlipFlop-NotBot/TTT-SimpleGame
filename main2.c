@@ -18,8 +18,8 @@
 // Creating the board struct
 struct TTT_BoardGame {
     unsigned short playerTurn;
-    double boardLen;
     int boardSqrt;
+    double boardLen;
     char board[3][3][3];
 };
 
@@ -27,8 +27,8 @@ struct TTT_BoardGame {
 struct TTT_BoardGame ttt_init(void) {
     struct TTT_BoardGame game = {};
     game.playerTurn = 0;
-    game.boardLen = sizeof(game.board);
     game.boardSqrt = 3;
+    game.boardLen = game.boardSqrt * game.boardSqrt;
     // Set the starting value in each board cell
     char pos[3] = {'0', '0', '1'};
     for (unsigned short v = 0; v < game.boardSqrt; v++) {
