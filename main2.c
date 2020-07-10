@@ -1,36 +1,53 @@
 /*
  * TESTED IN LINUX - 2020
  * 
- * TO DO: FIND A WAY TO SIGN EACH CELL WITH A NUMBER!!!
+ * This is my version of Tic Tac Toe, with an expandable board.
+ * The standard size for the board is 3x3,
+ * but it can be changed (only editing the script for now) to a 5x5, 7x7...
+ * To expand the board you need to change the first 2 sizes of the 'board' array,
+ * and by changing the 'boardSqrt' var to the same value as the first two.
 */
 
+// Including needed stuff
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
+#include <string.h>
 
+// Creating the board struct
 struct TTT_BoardGame {
     unsigned short playerTurn;
     double boardLen;
     int boardSqrt;
-    char board[3][3];
+    char board[3][3][3];
 };
 
+// Initializing the board struct
 struct TTT_BoardGame ttt_init(void) {
     struct TTT_BoardGame game = {};
     game.playerTurn = 0;
     game.boardLen = sizeof(game.board);
-    game.boardSqrt = sqrt(game.boardLen);
-    char pos = '1';
+    game.boardSqrt = 3;
+    // Set the starting value in each board cell
+    char pos[3] = {'0', '0', '1'};
     for (unsigned short v = 0; v < game.boardSqrt; v++) {
         for (unsigned short h = 0; h < game.boardSqrt; h++){
-            game.board[v][h] = pos;
-            pos++;
+			for (short p = 2; p >= 0; p--) {
+				game.board[v][h][p] = pos[p];
+			}
+			if (pos[2] < '9')
+            	pos[2]++;
+            else {
+            	pos[2] = '0';
+            	pos[1]++;
+            }
         }
     }
     return game;
 }
 
+// The menu that displays when starting the game
 void ttt_startMenu(void) {
 	char key;
 	system("clear");
@@ -38,63 +55,72 @@ void ttt_startMenu(void) {
 	scanf("%c", &key);
 }
 
+// Returns the symbol of the current player
 char ttt_currentPlayerTurn(struct TTT_BoardGame *game) {
     return game->playerTurn % 2 ? 'O' : 'X';
 }
 
+// Returns the symbol of the player before the one now
 char ttt_lastPlayerTurn(struct TTT_BoardGame *game) {
     return game->playerTurn % 2 ? 'X' : 'O';
 }
 
-int ttt_askForPosition(struct TTT_BoardGame *game) {
-    int pos;
+// Asks the current player for a position
+char *ttt_askForPosition(struct TTT_BoardGame *game) {
+    static char pos[3];
 
     printf("Choose a position for '%c': ", ttt_currentPlayerTurn(game));
-    scanf("%d", &pos);
-
+    scanf("%s", pos);
+	
     return pos;
 }
 
+// Checks if the spot chosen by the player is empty
 bool ttt_isLegalMove(struct TTT_BoardGame *game, unsigned short col, unsigned short row) {
     if ((row + 1) <= game->boardSqrt && (col +1) <= game->boardSqrt) {
-        if (game->board[col][row] != 'X' && game->board[col][row] != 'O')
+        if (game->board[col][row][1] != 'X' && game->board[col][row][1] != 'O')
             return true;
     }
     return false;
 }
 
+// Edit the board cell to display the symbol of the current player
 void ttt_markAnswer(struct TTT_BoardGame *game) {
-    int ans = ttt_askForPosition(game);
+    char *ans = ttt_askForPosition(game);
 
     for (unsigned short col = 0; col < game->boardSqrt; col++){
         for (unsigned short row = 0; row < game->boardSqrt; row++) {
-            if (ans + '0' == game->board[col][row]) {
-                if (ttt_isLegalMove(game, col, row)) {
-                    game->board[col][row] = ttt_currentPlayerTurn(game);
-                    game->playerTurn++;
-                }
-                else {
-                    ttt_markAnswer(game);
-                }
-                break;
+			if (strncmp(ans, game->board[col][row], 3) == 0) {
+    	   	    if (ttt_isLegalMove(game, col, row)) {
+            		game->board[col][row][0] = ' ';
+            	    game->board[col][row][2] = ' ';
+                   	game->board[col][row][1] = ttt_currentPlayerTurn(game);
+                   	game->playerTurn++;
+					break;
+             	}	
+               	else {
+     	        	ttt_markAnswer(game);
+               	}
             }
         }
     }
 }
 
+// Prints one row of board cells
 void ttt_displayBoardSegment(struct TTT_BoardGame *game, unsigned short vPos) {
     for (unsigned short v = 0; v < 3; v++) {
         if (v % 2 == 0) {
             for (unsigned short h = 0; h < game->boardSqrt; h++)
-                printf("|===|");
+                printf("|=====|");
         } else {
             for (unsigned short h = 0; h < game->boardSqrt; h++)
-                printf("| %c |", game->board[vPos][h]);
+                printf("| %c%c%c |", game->board[vPos][h][0], game->board[vPos][h][1], game->board[vPos][h][2]);
         }
         printf("\n");
     }
 }
 
+// Prints as many board cell rows as needed
 void ttt_displayBoardTotal(struct TTT_BoardGame *game) {
     system("clear");
     printf("Tic Tac Toe %dx%d\n\n", game->boardSqrt, game->boardSqrt);
@@ -102,68 +128,82 @@ void ttt_displayBoardTotal(struct TTT_BoardGame *game) {
         ttt_displayBoardSegment(game, i);
 }
 
+// Checks if the game ended in a draw
 bool ttt_testForDraw(struct TTT_BoardGame *game) {
     return game->playerTurn >= game->boardLen;
 }
 
+// Checks for rows with each cell full of one symbol
 bool ttt_isHorizontalWin(struct TTT_BoardGame *game) {
     for (unsigned short v = 0; v < game->boardSqrt; v++) {
-        char elem = game->board[v][0];
+        char elem = game->board[v][0][1];
         for (unsigned short h = 0; h < game->boardSqrt; h++) {
-            if (elem != game->board[v][h])
+            if (elem != game->board[v][h][1])
                 break;
-            if (h == game->boardSqrt - 1)
-                return true;
+            if (h == game->boardSqrt - 1) {
+           		if (elem == 'X' || elem == 'O')
+        			return true;
+            }
         }
     }
     return false;
 }
 
+// Checks for collumns with each cell full of one symbol
 bool ttt_isVerticalWin(struct TTT_BoardGame *game) {
     for (unsigned short h = 0; h < game->boardSqrt; h++) {
-        char elem = game->board[0][h];
+        char elem = game->board[0][h][1];
         for (unsigned short v = 0; v < game->boardSqrt; v++) {
-            if (elem != game->board[v][h])
+            if (elem != game->board[v][h][1])
                 break;
-            if (v == game->boardSqrt - 1)
-                return true;
+            if (v == game->boardSqrt - 1) {
+            	if (elem == 'X' || elem == 'O')
+        			return true;
+            }
         }
     }
     return false;
 }
 
+// Checks one diagonal (top left -> bottom right) with each cell full of one symbol 
 bool ttt_isDiagonalWinLeftToRight(struct TTT_BoardGame *game) {
-    char elem = game->board[0][0];
+    char elem = game->board[0][0][1];
 
     for (unsigned short v = 0, h = 0; v < game->boardSqrt; v++, h++) {
-        if (elem != game->board[v][h])
+        if (elem != game->board[v][h][1])
             break;
-        if (h == game->boardSqrt - 1)
-            return true;
+        if (h == game->boardSqrt - 1) {
+        	if (elem == 'X' || elem == 'O')
+        		return true;
+        }
     }
     return false;
 }
 
+// Checks other diagonal (top right -> bottom left) with each cell full of one symbol
 bool ttt_isDiagonalWinRightToLeft(struct TTT_BoardGame *game) {
     unsigned short lastPosRow = game->boardSqrt - 1;
-    char elem = game->board[0][lastPosRow];
+    char elem = game->board[0][lastPosRow][1];
 
     for (unsigned short v = 0, h = game->boardSqrt - 1; v < game->boardSqrt; v++, h--) {
 
-        if (elem != game->board[v][h])
+        if (elem != game->board[v][h][1])
             break;
-        if (h == 0)
-            return true;
+        if (h == 0) {
+        	if (elem == 'X' || elem == 'O')
+        		return true;
+        } 
     }
     return false;
 }
 
+// All of the 'win' possibilities combined
 bool ttt_testForWin(struct TTT_BoardGame *game) {
     if (ttt_isVerticalWin(game) || ttt_isHorizontalWin(game) || ttt_isDiagonalWinLeftToRight(game) || ttt_isDiagonalWinRightToLeft(game))
         return true;
 }
 
-
+// 'main' function
 int main() {
 	ttt_startMenu();
 	
