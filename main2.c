@@ -34,7 +34,7 @@ struct TTT_BoardGame ttt_init(void) {
 void ttt_startMenu(void) {
 	char key;
 	system("clear");
-	printf("Tic tac toe game.\n\nTip: When prompted, each player needs to choose a spot to place their symbol.\nPress the 'Enter' key to continue: ");
+	printf("Tic tac toe game.\n\nTip: When prompted, each player needs to choose a spot to place their symbol.\nPress the 'Enter' key to continue... ");
 	scanf("%c", &key);
 }
 
@@ -97,6 +97,7 @@ void ttt_displayBoardSegment(struct TTT_BoardGame *game, unsigned short vPos) {
 
 void ttt_displayBoardTotal(struct TTT_BoardGame *game) {
     system("clear");
+    printf("Tic Tac Toe %dx%d\n\n", game->boardSqrt, game->boardSqrt);
     for (unsigned short i = 0; i < game->boardSqrt; i++)
         ttt_displayBoardSegment(game, i);
 }
