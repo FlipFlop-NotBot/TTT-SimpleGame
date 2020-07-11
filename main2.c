@@ -21,6 +21,7 @@ struct TTT_BoardGame {
     unsigned short playerTurn;
     int boardSqrt;
     double boardLen;
+    bool canFinish;
     char board[3][3][3];
 };
 
@@ -30,6 +31,8 @@ struct TTT_BoardGame ttt_init(void) {
     game.playerTurn = 0;
     game.boardSqrt = 3;
     game.boardLen = game.boardSqrt * game.boardSqrt;
+    game.canFinish = false;
+    
     // Set the starting value in each board cell
     char pos[3] = {'0', '0', '1'};
     for (unsigned short v = 0; v < game.boardSqrt; v++) {
@@ -209,31 +212,35 @@ bool ttt_testForWin(struct TTT_BoardGame *game) {
         return true;
 }
 
+// Checks if somebody won or the game ended in a draw
+bool ttt_finishGame(struct TTT_BoardGame *game) {
+	if (ttt_testForWin(game) && game->canFinish) {
+		printf("\n'%c' won!\n", ttt_lastPlayerTurn(game));
+	    return true;
+	}
+	else if (ttt_testForDraw(game) && game->canFinish) {
+		printf("\nDraw!\n");
+		return true;
+	}
+	else if (ttt_testForWin(game) || ttt_testForDraw(game)) {
+		game->canFinish = true;
+	}
+	return false;
+}
+
+
 // 'main' function
 int main() {
 	ttt_startMenu();
 	
-    bool canFinish = false;
     for (struct TTT_BoardGame game = ttt_init();;) {
         ttt_displayBoardTotal(&game);
 
-        if (!canFinish)
+        if (!game.canFinish)
             ttt_markAnswer(&game);
 
-
-        if (ttt_testForWin(&game) && canFinish) {
-            printf("\n'%c' won!\n", ttt_lastPlayerTurn(&game));
-            break;
-        }
-        else if (ttt_testForDraw(&game) && canFinish) {
-            printf("\nDraw!\n");
-            break;
-        }
-        else if (ttt_testForWin(&game) || ttt_testForDraw(&game)) {
-            canFinish = true;
-        }
-
-
+		if (ttt_finishGame(&game))
+			break;
     }
 
     return 0;
