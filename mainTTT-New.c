@@ -155,7 +155,7 @@ bool ttt_isHorizontalWin(struct TTT_BoardGame *game) {
     return false;
 }
 
-// Checks for collumns with each cell full of one symbol
+// Checks for columns with each cell full of one symbol
 bool ttt_isVerticalWin(struct TTT_BoardGame *game) {
     for (unsigned short h = 0; h < game->boardSqrt; h++) {
         char elem = game->board[0][h][1];
