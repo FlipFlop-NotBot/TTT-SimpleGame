@@ -1,11 +1,9 @@
 /*
+ *
  * TESTED IN LINUX - 2020
  * 
  * This is my version of Tic Tac Toe, with an expandable board.
- * The standard size for the board is 3x3,
- * but it can be changed (only editing the script for now) to a 5x5, 7x7...
- * To expand the board you need to change the first 2 sizes of the 'board' array,
- * and by changing the 'boardSqrt' var to the same value as the first two.
+ *
 */
 
 
@@ -22,21 +20,44 @@ struct TTT_BoardGame {
     int boardSqrt;
     double boardLen;
     bool canFinish;
-    char board[3][3][3];
+    char ***board;
 };
+
+// Ask the player for the size of the board they want
+int askForBoardSize(void) {
+	system("clear");
+	int size;
+	printf("Tic tac toe game.\n\nWhat size do you want the board to be? Enter a number to create a new board with the desired size: ");
+	scanf("%d", &size);
+	return size;
+}
 
 // Initializing the board struct
 struct TTT_BoardGame ttt_init(void) {
     struct TTT_BoardGame game = {};
     game.playerTurn = 0;
-    game.boardSqrt = 3;
-    game.boardLen = game.boardSqrt * game.boardSqrt;
     game.canFinish = false;
+
+	int bSize = askForBoardSize();
+
+	// Initialize the board at the correct size
+	game.boardSqrt = bSize;
+	game.boardLen = game.boardSqrt * game.boardSqrt;
+
+	game.board = (char***)malloc(bSize * sizeof(char**));
+
+	for (int i = 0; i < bSize; i++) {
+		game.board[i] = (char**) malloc(bSize * sizeof(char*));
+
+		for (int j = 0; j < bSize; j++) {
+			game.board[i][j] = (char*) malloc(3 * sizeof(char));
+		}
+	}
     
     // Set the starting value in each board cell
     char pos[3] = {'0', '0', '1'};
     for (unsigned short v = 0; v < game.boardSqrt; v++) {
-        for (unsigned short h = 0; h < game.boardSqrt; h++){
+        for (unsigned short h = 0; h < game.boardSqrt; h++) {
 			for (short p = 2; p >= 0; p--) {
 				game.board[v][h][p] = pos[p];
 			}
