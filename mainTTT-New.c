@@ -58,10 +58,17 @@ struct TTT_BoardGame ttt_init(void) {
     char pos[3] = {'0', '0', '1'};
     for (unsigned short v = 0; v < game.boardSqrt; v++) {
         for (unsigned short h = 0; h < game.boardSqrt; h++) {
+<<<<<<< HEAD
 			for (short p = 2; p >= 0; p--) {
 				game.board[v][h][p] = pos[p];
 			}
 			if (pos[2] < '9')
+=======
+	    for (short p = 2; p >= 0; p--) {
+	        game.board[v][h][p] = pos[p];
+	    }
+	    if (pos[2] < '9')
+>>>>>>> 4d6d2b55edebdb3de7a01e76c498eb7b076c0790
             	pos[2]++;
             else {
             	pos[2] = '0';
@@ -120,16 +127,16 @@ void ttt_markAnswer(struct TTT_BoardGame *game) {
 
     for (unsigned short col = 0; col < game->boardSqrt; col++){
         for (unsigned short row = 0; row < game->boardSqrt; row++) {
-			if (strncmp(ans, game->board[col][row], 3) == 0) {
-    	   	    if (ttt_isLegalMove(game, col, row)) {
-            		game->board[col][row][0] = ' ';
+	    if (strncmp(ans, game->board[col][row], 3) == 0) {
+    	   	if (ttt_isLegalMove(game, col, row)) {
+            	    game->board[col][row][0] = ' ';
             	    game->board[col][row][2] = ' ';
-                   	game->board[col][row][1] = ttt_currentPlayerTurn(game);
-                   	game->playerTurn++;
-					break;
+                    game->board[col][row][1] = ttt_currentPlayerTurn(game);
+                    game->playerTurn++;
+		    break;
              	}	
                	else {
-     	        	ttt_markAnswer(game);
+     	            ttt_markAnswer(game);
                	}
             }
         }
@@ -171,8 +178,8 @@ bool ttt_isHorizontalWin(struct TTT_BoardGame *game) {
             if (elem != game->board[v][h][1])
                 break;
             if (h == game->boardSqrt - 1) {
-           		if (elem == 'X' || elem == 'O')
-        			return true;
+                if (elem == 'X' || elem == 'O')
+        	    return true;
             }
         }
     }
@@ -188,7 +195,7 @@ bool ttt_isVerticalWin(struct TTT_BoardGame *game) {
                 break;
             if (v == game->boardSqrt - 1) {
             	if (elem == 'X' || elem == 'O')
-        			return true;
+        	    return true;
             }
         }
     }
@@ -203,8 +210,8 @@ bool ttt_isDiagonalWinLeftToRight(struct TTT_BoardGame *game) {
         if (elem != game->board[v][h][1])
             break;
         if (h == game->boardSqrt - 1) {
-        	if (elem == 'X' || elem == 'O')
-        		return true;
+            if (elem == 'X' || elem == 'O')
+                return true;
         }
     }
     return false;
@@ -220,8 +227,8 @@ bool ttt_isDiagonalWinRightToLeft(struct TTT_BoardGame *game) {
         if (elem != game->board[v][h][1])
             break;
         if (h == 0) {
-        	if (elem == 'X' || elem == 'O')
-        		return true;
+            if (elem == 'X' || elem == 'O')
+                return true;
         } 
     }
     return false;
@@ -236,15 +243,15 @@ bool ttt_testForWin(struct TTT_BoardGame *game) {
 // Checks if somebody won or the game ended in a draw
 bool ttt_finishGame(struct TTT_BoardGame *game) {
 	if (ttt_testForWin(game) && game->canFinish) {
-		printf("\n'%c' won!\n", ttt_lastPlayerTurn(game));
+	    printf("\n'%c' won!\n", ttt_lastPlayerTurn(game));
 	    return true;
 	}
 	else if (ttt_testForDraw(game) && game->canFinish) {
-		printf("\nDraw!\n");
-		return true;
+	    printf("\nDraw!\n");
+            return true;
 	}
 	else if (ttt_testForWin(game) || ttt_testForDraw(game)) {
-		game->canFinish = true;
+	    game->canFinish = true;
 	}
 	return false;
 }
@@ -252,7 +259,7 @@ bool ttt_finishGame(struct TTT_BoardGame *game) {
 
 // 'main' function
 int main() {
-	ttt_startMenu();
+    ttt_startMenu();
 	
     for (struct TTT_BoardGame game = ttt_init();;) {
         ttt_displayBoardTotal(&game);
@@ -260,8 +267,8 @@ int main() {
         if (!game.canFinish)
             ttt_markAnswer(&game);
 
-		if (ttt_finishGame(&game))
-			break;
+	if (ttt_finishGame(&game))
+	    break;
     }
 
     return 0;
