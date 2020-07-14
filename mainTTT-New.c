@@ -270,6 +270,7 @@ int main() {
             ttt_markAnswer(&game);
 
 		if (ttt_finishGame(&game)) {
+			// Free up memory space
 			for (int v = 0; v < game.boardSqrt; v++) {
 				for (int h = 0; h < game.boardSqrt; h++)
 					free(game.board[v][h]);
