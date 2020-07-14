@@ -4,6 +4,8 @@
  * 
  * This is my version of Tic Tac Toe, with an expandable board.
  *
+ * TO DO: MAKE THE CODE LOOK NICE!!!
+ *
 */
 
 
@@ -58,17 +60,17 @@ struct TTT_BoardGame ttt_init(void) {
     char pos[3] = {'0', '0', '1'};
     for (unsigned short v = 0; v < game.boardSqrt; v++) {
         for (unsigned short h = 0; h < game.boardSqrt; h++) {
-<<<<<<< HEAD
+
 			for (short p = 2; p >= 0; p--) {
 				game.board[v][h][p] = pos[p];
 			}
 			if (pos[2] < '9')
-=======
+
 	    for (short p = 2; p >= 0; p--) {
 	        game.board[v][h][p] = pos[p];
 	    }
 	    if (pos[2] < '9')
->>>>>>> 4d6d2b55edebdb3de7a01e76c498eb7b076c0790
+
             	pos[2]++;
             else {
             	pos[2] = '0';
