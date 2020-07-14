@@ -269,8 +269,16 @@ int main() {
         if (!game.canFinish)
             ttt_markAnswer(&game);
 
-	if (ttt_finishGame(&game))
-	    break;
+		if (ttt_finishGame(&game)) {
+			for (int v = 0; v < game.boardSqrt; v++) {
+				for (int h = 0; h < game.boardSqrt; h++)
+					free(game.board[v][h]);
+			}
+			free(game.board);
+			
+			break;
+		}
+	    	
     }
 
     return 0;
