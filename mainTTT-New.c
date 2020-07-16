@@ -16,6 +16,31 @@
 #include <math.h>
 #include <string.h>
 
+struct TTT_BoardGame;
+struct TTT_BoardGame ttt_init(void);
+
+int askForBoardSize(void);
+void ttt_startMenu(void);
+
+char ttt_currentPlayerTurn(struct TTT_BoardGame *game);
+char ttt_lastPlayerTurn(struct TTT_BoardGame *game);
+
+char *ttt_askForPosition(struct TTT_BoardGame *game);
+void ttt_markAnswer(struct TTT_BoardGame *game);
+bool ttt_isLegalMove(struct TTT_BoardGame *game, unsigned short col, unsigned short row);
+
+void ttt_displayBoardSegment(struct TTT_BoardGame *game, unsigned short vPos);
+void ttt_displayBoardTotal(struct TTT_BoardGame *game);
+
+bool ttt_testForDraw(struct TTT_BoardGame *game);
+bool ttt_isHorizontalWin(struct TTT_BoardGame *game);
+bool ttt_isVerticalWin(struct TTT_BoardGame *game);
+bool ttt_isDiagonalWinLeftToRight(struct TTT_BoardGame *game);
+bool ttt_isDiagonalWinRightToLeft(struct TTT_BoardGame *game);
+bool ttt_testForWin(struct TTT_BoardGame *game);
+bool ttt_finishGame(struct TTT_BoardGame *game);
+
+
 // Creating the board struct
 struct TTT_BoardGame {
     unsigned short playerTurn;
@@ -25,6 +50,86 @@ struct TTT_BoardGame {
     char ***board;
 };
 
+// Initializing the board struct
+struct TTT_BoardGame ttt_init(void) {
+    struct TTT_BoardGame game = {};
+    game.playerTurn = 0;
+    game.canFinish = false;
+
+    int bSize = askForBoardSize();
+
+    // Initialize the board at the correct size
+    game.boardSqrt = bSize;
+    game.boardLen = game.boardSqrt * game.boardSqrt;
+
+    game.board = (char***)malloc(bSize * sizeof(char**));
+
+    for (int i = 0; i < bSize; i++) {
+        game.board[i] = (char**) malloc(bSize * sizeof(char*));
+
+        for (int j = 0; j < bSize; j++) {
+            game.board[i][j] = (char*) malloc(3 * sizeof(char));
+        }
+    }
+
+    // Set the starting value in each board cell
+    char pos[3] = {'0', '0', '1'};
+    for (unsigned short v = 0; v < game.boardSqrt; v++) {
+        for (unsigned short h = 0; h < game.boardSqrt; h++) {
+
+            for (short p = 2; p >= 0; p--) {
+                game.board[v][h][p] = pos[p];
+            }
+            if (pos[2] < '9')
+
+                for (short p = 2; p >= 0; p--) {
+                    game.board[v][h][p] = pos[p];
+                }
+            if (pos[2] < '9')
+
+                pos[2]++;
+            else {
+                pos[2] = '0';
+                pos[1]++;
+            }
+
+            if (pos[1] > '9') {
+                pos[1] = '0';
+                pos[0]++;
+            }
+        }
+    }
+    return game;
+}
+
+
+// 'main' function
+int main() {
+    ttt_startMenu();
+
+    for (struct TTT_BoardGame game = ttt_init();;) {
+        ttt_displayBoardTotal(&game);
+
+        if (!game.canFinish)
+            ttt_markAnswer(&game);
+
+        if (ttt_finishGame(&game)) {
+            // Free up memory space
+            for (int v = 0; v < game.boardSqrt; v++) {
+                for (int h = 0; h < game.boardSqrt; h++)
+                    free(game.board[v][h]);
+            }
+            free(game.board);
+
+            break;
+        }
+
+    }
+
+    return 0;
+}
+
+
 // Ask the player for the size of the board they want
 int askForBoardSize(void) {
 	system("clear");
@@ -32,58 +137,6 @@ int askForBoardSize(void) {
 	printf("Tic tac toe game.\n\nWhat size do you want the board to be? Enter a number to create a new board with the desired size: ");
 	scanf("%d", &size);
 	return size;
-}
-
-// Initializing the board struct
-struct TTT_BoardGame ttt_init(void) {
-    struct TTT_BoardGame game = {};
-    game.playerTurn = 0;
-    game.canFinish = false;
-
-	int bSize = askForBoardSize();
-
-	// Initialize the board at the correct size
-	game.boardSqrt = bSize;
-	game.boardLen = game.boardSqrt * game.boardSqrt;
-
-	game.board = (char***)malloc(bSize * sizeof(char**));
-
-	for (int i = 0; i < bSize; i++) {
-		game.board[i] = (char**) malloc(bSize * sizeof(char*));
-
-		for (int j = 0; j < bSize; j++) {
-			game.board[i][j] = (char*) malloc(3 * sizeof(char));
-		}
-	}
-    
-    // Set the starting value in each board cell
-    char pos[3] = {'0', '0', '1'};
-    for (unsigned short v = 0; v < game.boardSqrt; v++) {
-        for (unsigned short h = 0; h < game.boardSqrt; h++) {
-
-			for (short p = 2; p >= 0; p--) {
-				game.board[v][h][p] = pos[p];
-			}
-			if (pos[2] < '9')
-
-	    for (short p = 2; p >= 0; p--) {
-	        game.board[v][h][p] = pos[p];
-	    }
-	    if (pos[2] < '9')
-
-            	pos[2]++;
-            else {
-            	pos[2] = '0';
-            	pos[1]++;
-            }
-
-            if (pos[1] > '9') {
-            	pos[1] = '0';
-            	pos[0]++;
-            }
-        }
-    }
-    return game;
 }
 
 // The menu that displays when starting the game
@@ -256,31 +309,4 @@ bool ttt_finishGame(struct TTT_BoardGame *game) {
 	    game->canFinish = true;
 	}
 	return false;
-}
-
-
-// 'main' function
-int main() {
-    ttt_startMenu();
-	
-    for (struct TTT_BoardGame game = ttt_init();;) {
-        ttt_displayBoardTotal(&game);
-
-        if (!game.canFinish)
-            ttt_markAnswer(&game);
-
-		if (ttt_finishGame(&game)) {
-			// Free up memory space
-			for (int v = 0; v < game.boardSqrt; v++) {
-				for (int h = 0; h < game.boardSqrt; h++)
-					free(game.board[v][h]);
-			}
-			free(game.board);
-			
-			break;
-		}
-	    	
-    }
-
-    return 0;
 }
